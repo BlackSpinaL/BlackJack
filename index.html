@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blackjack Helper</title>
+<title>BlackJack</title>
 <style>
   @font-face {
     font-family: 'Aptos';
@@ -11,25 +11,25 @@
   }
   * { box-sizing: border-box; font-family: 'Aptos', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
   body {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: radial-gradient(circle at top, #184a2c 0%, #0f2d1a 45%, #08150d 100%);
     min-height: 100vh; margin: 0; padding: 20px; color: #e0e0e0;
   }
   .container {
-    max-width: 800px; margin: 0 auto; background: rgba(255, 255, 255, 0.05);
+    max-width: 900px; margin: 0 auto; background: rgba(15,20,15,0.92); border:2px solid rgba(212,175,55,.35);
     border-radius: 15px; padding: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
   }
-  h1 { text-align: center; color: #00d4ff; margin-bottom: 10px; font-size: 2.5em; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+  h1 { text-align: center; color: #d4af37; letter-spacing:4px; margin-bottom: 10px; font-size: 2.5em; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
   .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 1.1em; }
   .cards-section { background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 25px; margin-bottom: 25px; }
-  .section-title { color: #00d4ff; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #00d4ff; padding-bottom: 8px; }
+  .section-title { color: #d4af37; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #00d4ff; padding-bottom: 8px; }
   .player-cards, .dealer-card { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
   .card-input-group { display: flex; flex-direction: column; gap: 5px; }
   .card-select {
     padding: 12px; border-radius: 8px; border: 2px solid #333; background: rgba(255, 255, 255, 0.05);
     color: #e0e0e0; font-size: 1.1em; width: 120px; transition: all 0.3s;
   }
-  .card-select:focus { outline: none; border-color: #00d4ff; box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+  .card-select:focus { outline: none; border-color: #d4af37; box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
   .card-select option { color: #000; }
   .btn {
     padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em;
@@ -42,7 +42,7 @@
   .hand-info { display: flex; justify-content: space-around; margin: 20px 0; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; flex-wrap: wrap; gap: 10px; }
   .info-item { text-align: center; min-width: 120px; }
   .info-label { font-size: 0.9em; color: #888; margin-bottom: 5px; }
-  .info-value { font-size: 1.3em; font-weight: bold; color: #00d4ff; }
+  .info-value { font-size: 1.3em; font-weight: bold; color: #d4af37; }
   .buttons-container { display: flex; justify-content: center; gap: 15px; margin: 25px 0; flex-wrap: wrap; }
   .decision-output { text-align: center; margin: 30px 0; }
   .decision-box {
@@ -57,7 +57,7 @@
   @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
   .card-display { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0; }
   .card {
-    width: 80px; height: 120px; border-radius: 8px; background: white; display: flex;
+    width: 90px; height: 130px; border-radius: 8px; background: white; display: flex;
     flex-direction: column; justify-content: space-between; align-items: center; padding: 5px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); font-weight: bold; color: #333; position: relative;
   }
@@ -65,7 +65,7 @@
   .card-suit { font-size: 1.2em; }
   .corner-suit { position: absolute; top: 5px; left: 5px; font-size: 0.8em; }
   .instructions { background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 20px; margin-top: 30px; font-size: 0.9em; line-height: 1.6; }
-  .instructions h3 { color: #00d4ff; margin-top: 0; }
+  .instructions h3 { color: #d4af37; margin-top: 0; }
   .warning-box {
     background: rgba(255, 71, 87, 0.12); border: 1px solid rgba(255, 71, 87, 0.4);
     border-radius: 10px; padding: 16px 18px; margin-top: 20px; font-size: 0.88em; line-height: 1.6; color: #f0f0f0;
@@ -78,12 +78,96 @@
     .decision-box { font-size: 1.8em; padding: 15px 30px; }
     .info-item { min-width: 100px; }
   }
+
+.subtitle{font-weight:bold;letter-spacing:1px}
+.container::before{
+content:'';
+display:block;
+height:6px;
+border-radius:10px;
+background:linear-gradient(90deg,#d4af37,#f4e28a,#d4af37);
+margin-bottom:20px;
+}
+.section-title{
+text-transform:uppercase;
+letter-spacing:1px;
+}
+
+body::before{
+content:'';
+position:fixed;
+inset:0;
+pointer-events:none;
+background:
+radial-gradient(circle at center, rgba(255,215,0,.08), transparent 60%),
+repeating-radial-gradient(circle at center, transparent 0 120px, rgba(255,255,255,.015) 121px 122px);
+}
+
+.container{
+box-shadow:0 0 25px rgba(212,175,55,.25), 0 0 80px rgba(212,175,55,.08);
+}
+
+h1{
+text-shadow:0 0 10px rgba(212,175,55,.6),0 0 25px rgba(212,175,55,.35);
+}
+
+.decision-box{
+border:2px solid rgba(255,215,0,.4);
+box-shadow:0 0 20px rgba(255,215,0,.35);
+}
+
+.chips-area{
+display:flex;
+justify-content:center;
+gap:16px;
+margin:15px 0 25px 0;
+}
+
+.chip{
+width:64px;
+height:64px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+color:white;
+border:4px dashed rgba(255,255,255,.75);
+animation:floatchip 3s ease-in-out infinite;
+box-shadow:0 0 15px rgba(0,0,0,.5);
+}
+
+.chip:nth-child(1){background:#c62828;}
+.chip:nth-child(2){background:#1565c0;animation-delay:.5s;}
+.chip:nth-child(3){background:#2e7d32;animation-delay:1s;}
+.chip:nth-child(4){background:#6a1b9a;animation-delay:1.5s;}
+
+@keyframes floatchip{
+50%{transform:translateY(-8px) rotate(6deg);}
+}
+
+.cards-section{
+background:linear-gradient(180deg, rgba(17,75,45,.95), rgba(8,40,22,.95));
+border:1px solid rgba(212,175,55,.25);
+}
+
+.card{
+border:1px solid rgba(212,175,55,.4);
+}
+
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>🎰 Blackjack Helper</h1>
-  <p class="subtitle">Estratégia Básica para 6-8 Baralhos | Dealer para em Soft 17</p>
+  <h1>♠ BLACKJACK ♥</h1>
+  <p class="subtitle">♠ Estratégia Básica Profissional | 6-8 Baralhos | Dealer para em Soft 17 ♥</p>
+<div class="chips-area">
+<div class="chip">5</div>
+<div class="chip">25</div>
+<div class="chip">100</div>
+<div class="chip">500</div>
+</div>
+
 
   <div class="cards-section">
     <h2 class="section-title">🃏 Suas Cartas</h2>
@@ -135,7 +219,7 @@
   </div>
 
   <div class="decision-output">
-    <h2 class="section-title">✅ Decisão Ótima</h2>
+    <h2 class="section-title">🎯 Jogada Recomendada</h2>
     <div id="decision" class="decision-box" style="display: none;"></div>
     <p id="decisionText" style="margin-top: 20px; font-size: 1.2em; color: #888;">Selecione suas cartas e a carta do dealer</p>
   </div>
@@ -345,7 +429,7 @@ function getBasicStrategyDecision(playerCards, dealerVal) {
   if (total === 16) return (dealerVal >= 2 && dealerVal <= 6) ? 'STAND' : 'HIT';
   if (total >= 13 && total <= 15) return (dealerVal >= 2 && dealerVal <= 6) ? 'STAND' : 'HIT';
   if (total === 12) return (dealerVal >= 4 && dealerVal <= 6) ? 'STAND' : 'HIT';
-  if (total === 11) return (dealerVal !== 1) ? 'DOUBLE' : 'HIT'; // pede contra Ás do dealer
+  if (total === 11) return 'DOUBLE';
   if (total === 10) return (dealerVal >= 2 && dealerVal <= 9) ? 'DOUBLE' : 'HIT';
   if (total === 9) return (dealerVal >= 3 && dealerVal <= 6) ? 'DOUBLE' : 'HIT';
   return 'HIT'; // total <= 8
@@ -374,7 +458,13 @@ function updateDecision() {
 
   const decisionElement = document.getElementById('decision');
   const textElement = document.getElementById('decisionText');
-  decisionElement.textContent = decision;
+  const decisionPT = {
+  HIT: 'PEDIR',
+  STAND: 'PARAR',
+  DOUBLE: 'DOBRAR',
+  SPLIT: 'DIVIDIR'
+};
+  decisionElement.textContent = decisionPT[decision];
   decisionElement.className = `decision-box decision-${decision}`;
   decisionElement.style.display = 'inline-block';
   textElement.textContent = message;
