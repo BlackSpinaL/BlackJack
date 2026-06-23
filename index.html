@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blackjack Helper</title>
+<style>
+  @font-face {
+    font-family: 'Aptos';
+    src: local('Aptos');
+  }
+  * { box-sizing: border-box; font-family: 'Aptos', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh; margin: 0; padding: 20px; color: #e0e0e0;
+  }
+  .container {
+    max-width: 800px; margin: 0 auto; background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px; padding: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+  }
+  h1 { text-align: center; color: #00d4ff; margin-bottom: 10px; font-size: 2.5em; text-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+  .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 1.1em; }
+  .cards-section { background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 25px; margin-bottom: 25px; }
+  .section-title { color: #00d4ff; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #00d4ff; padding-bottom: 8px; }
+  .player-cards, .dealer-card { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .card-input-group { display: flex; flex-direction: column; gap: 5px; }
+  .card-select {
+    padding: 12px; border-radius: 8px; border: 2px solid #333; background: rgba(255, 255, 255, 0.05);
+    color: #e0e0e0; font-size: 1.1em; width: 120px; transition: all 0.3s;
+  }
+  .card-select:focus { outline: none; border-color: #00d4ff; box-shadow: 0 0 10px rgba(0, 212, 255, 0.5); }
+  .card-select option { color: #000; }
+  .btn {
+    padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 1em;
+    font-weight: bold; transition: all 0.3s; margin: 5px; font-family: 'Aptos', 'Segoe UI', sans-serif;
+  }
+  .btn-primary { background: linear-gradient(45deg, #00d4ff, #0099cc); color: white; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4); }
+  .btn-danger { background: linear-gradient(45deg, #ff4757, #cc0000); color: white; }
+  .btn-success { background: linear-gradient(45deg, #2ed573, #1e904d); color: white; }
+  .hand-info { display: flex; justify-content: space-around; margin: 20px 0; padding: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; flex-wrap: wrap; gap: 10px; }
+  .info-item { text-align: center; min-width: 120px; }
+  .info-label { font-size: 0.9em; color: #888; margin-bottom: 5px; }
+  .info-value { font-size: 1.3em; font-weight: bold; color: #00d4ff; }
+  .buttons-container { display: flex; justify-content: center; gap: 15px; margin: 25px 0; flex-wrap: wrap; }
+  .decision-output { text-align: center; margin: 30px 0; }
+  .decision-box {
+    display: inline-block; padding: 20px 40px; border-radius: 12px; font-size: 2.5em;
+    font-weight: bold; text-transform: uppercase; letter-spacing: 3px; animation: pulse 2s infinite;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  }
+  .decision-HIT { background: linear-gradient(45deg, #ff4757, #cc0000); color: white; }
+  .decision-STAND { background: linear-gradient(45deg, #2ed573, #1e904d); color: white; }
+  .decision-DOUBLE { background: linear-gradient(45deg, #ff6b35, #f7931e); color: white; }
+  .decision-SPLIT { background: linear-gradient(45deg, #8e44ad, #5d1088); color: white; }
+  @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+  .card-display { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 15px 0; }
+  .card {
+    width: 80px; height: 120px; border-radius: 8px; background: white; display: flex;
+    flex-direction: column; justify-content: space-between; align-items: center; padding: 5px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3); font-weight: bold; color: #333; position: relative;
+  }
+  .card.red { color: #d32f2f; }
+  .card-suit { font-size: 1.2em; }
+  .corner-suit { position: absolute; top: 5px; left: 5px; font-size: 0.8em; }
+  .instructions { background: rgba(0, 0, 0, 0.2); border-radius: 10px; padding: 20px; margin-top: 30px; font-size: 0.9em; line-height: 1.6; }
+  .instructions h3 { color: #00d4ff; margin-top: 0; }
+  .warning-box {
+    background: rgba(255, 71, 87, 0.12); border: 1px solid rgba(255, 71, 87, 0.4);
+    border-radius: 10px; padding: 16px 18px; margin-top: 20px; font-size: 0.88em; line-height: 1.6; color: #f0f0f0;
+  }
+  .warning-box strong { color: #ff8a8a; }
+  @media (max-width: 600px) {
+    .container { padding: 20px; }
+    h1 { font-size: 1.8em; }
+    .card-select { width: 100px; }
+    .decision-box { font-size: 1.8em; padding: 15px 30px; }
+    .info-item { min-width: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎰 Blackjack Helper</h1>
+  <p class="subtitle">Estratégia Básica para 6-8 Baralhos | Dealer para em Soft 17</p>
+
+  <div class="cards-section">
+    <h2 class="section-title">🃏 Suas Cartas</h2>
+    <div class="player-cards" id="playerCardsContainer">
+      <div class="card-input-group">
+        <select class="card-select" id="card1">
+          <option value="">-- Carta 1 --</option>
+          <option value="A">Ás (A)</option>
+          <option value="2">2</option><option value="3">3</option><option value="4">4</option>
+          <option value="5">5</option><option value="6">6</option><option value="7">7</option>
+          <option value="8">8</option><option value="9">9</option><option value="10">10</option>
+          <option value="J">Valete (J)</option><option value="Q">Dama (Q)</option><option value="K">Rei (K)</option>
+        </select>
+      </div>
+      <div class="card-input-group">
+        <select class="card-select" id="card2">
+          <option value="">-- Carta 2 --</option>
+          <option value="A">Ás (A)</option><option value="2">2</option><option value="3">3</option>
+          <option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option>
+          <option value="8">8</option><option value="9">9</option><option value="10">10</option>
+          <option value="J">Valete (J)</option><option value="Q">Dama (Q)</option><option value="K">Rei (K)</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-display" id="playerCardsDisplay"></div>
+    <div class="buttons-container">
+      <button class="btn btn-primary" onclick="addCard()">+ Adicionar Carta</button>
+      <button class="btn btn-danger" onclick="removeCard()">- Remover Carta</button>
+    </div>
+    <div class="hand-info">
+      <div class="info-item"><div class="info-label">Valor da Mão</div><div class="info-value" id="handValue">0</div></div>
+      <div class="info-item"><div class="info-label">Mão Macia</div><div class="info-value" id="isSoft">Não</div></div>
+      <div class="info-item"><div class="info-label">Número de Cartas</div><div class="info-value" id="cardCount">0</div></div>
+    </div>
+  </div>
+
+  <div class="cards-section">
+    <h2 class="section-title">🎴 Carta do Dealer</h2>
+    <div class="dealer-card">
+      <select class="card-select" id="dealerCard">
+        <option value="">-- Carta do Dealer --</option>
+        <option value="A">Ás (A)</option><option value="2">2</option><option value="3">3</option>
+        <option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option>
+        <option value="8">8</option><option value="9">9</option><option value="10">10</option>
+        <option value="J">Valete (J)</option><option value="Q">Dama (Q)</option><option value="K">Rei (K)</option>
+      </select>
+    </div>
+    <div class="card-display" id="dealerCardDisplay"></div>
+  </div>
+
+  <div class="decision-output">
+    <h2 class="section-title">✅ Decisão Ótima</h2>
+    <div id="decision" class="decision-box" style="display: none;"></div>
+    <p id="decisionText" style="margin-top: 20px; font-size: 1.2em; color: #888;">Selecione suas cartas e a carta do dealer</p>
+  </div>
+
+  <div class="buttons-container">
+    <button class="btn btn-success" onclick="generateRandomHand()">🎲 Mão Aleatória</button>
+    <button class="btn btn-primary" onclick="clearAll()">🔄 Limpar Tudo</button>
+  </div>
+
+  <div class="instructions">
+    <h3>📋 Como Usar:</h3>
+    <ol>
+      <li>Selecione suas cartas (mínimo 2)</li>
+      <li>Selecione a carta visível do dealer</li>
+      <li>A decisão ótima será mostrada automaticamente</li>
+      <li>Use "Mão Aleatória" para praticar</li>
+    </ol>
+    <p><strong>Estratégia:</strong> Baseada em 6-8 baralhos, dealer para em Soft 17, double after split permitido.</p>
+  </div>
+
+  <div class="warning-box">
+    <strong>Importante:</strong> esta ferramenta aplica a estratégia básica matemática, que reduz a vantagem da casa para perto de 0,5%, mas não elimina essa vantagem nem garante vitória. Em blackjack online o baralho costuma ser embaralhado a cada mão (RNG ou shuffle constante), então contagem de cartas não se aplica. Nenhuma estratégia sem contagem de cartas vence o cassino no longo prazo — esta calculadora apenas evita os erros que aumentam ainda mais a perda esperada.
+  </div>
+</div>
+
+<script>
+let playerCards = ['', ''];
+let maxCards = 8;
+const suits = ['♥', '♦', '♣', '♠'];
+const redSuits = ['♥', '♦'];
+
+updateCardDisplay();
+updateHandInfo();
+
+function addCard() {
+  if (playerCards.length < maxCards) {
+    playerCards.push('');
+    updateCardInputs();
+    updateCardDisplay();
+    updateHandInfo();
+  }
+}
+
+function removeCard() {
+  if (playerCards.length > 2) {
+    playerCards.pop();
+    updateCardInputs();
+    updateCardDisplay();
+    updateHandInfo();
+  }
+}
+
+function updateCardInputs() {
+  const container = document.getElementById('playerCardsContainer');
+  container.innerHTML = '';
+  playerCards.forEach((card, index) => {
+    const group = document.createElement('div');
+    group.className = 'card-input-group';
+    const select = document.createElement('select');
+    select.className = 'card-select';
+    select.id = `card${index + 1}`;
+    select.innerHTML = `<option value="">-- Carta ${index + 1} --</option><option value="A">Ás (A)</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="J">Valete (J)</option><option value="Q">Dama (Q)</option><option value="K">Rei (K)</option>`;
+    select.value = card;
+    select.onchange = () => {
+      playerCards[index] = select.value;
+      updateCardDisplay();
+      updateHandInfo();
+      updateDecision();
+    };
+    group.appendChild(select);
+    container.appendChild(group);
+  });
+  document.getElementById('dealerCard').onchange = () => {
+    updateCardDisplay();
+    updateDecision();
+  };
+}
+
+function updateCardDisplay() {
+  const playerDisplay = document.getElementById('playerCardsDisplay');
+  const dealerDisplay = document.getElementById('dealerCardDisplay');
+  const dealerCardValue = document.getElementById('dealerCard').value;
+  playerDisplay.innerHTML = '';
+  playerCards.forEach(card => {
+    if (card) playerDisplay.appendChild(createCardElement(card));
+  });
+  dealerDisplay.innerHTML = '';
+  if (dealerCardValue) dealerDisplay.appendChild(createCardElement(dealerCardValue));
+}
+
+function createCardElement(cardValue) {
+  const cardDiv = document.createElement('div');
+  cardDiv.className = 'card';
+  const suit = suits[Math.floor(Math.random() * suits.length)];
+  const isRed = redSuits.includes(suit);
+  cardDiv.classList.add(isRed ? 'red' : 'black');
+  const valueDiv = document.createElement('div');
+  valueDiv.className = 'card-value';
+  valueDiv.textContent = cardValue;
+  const suitDiv = document.createElement('div');
+  suitDiv.className = 'card-suit';
+  suitDiv.textContent = suit;
+  const cornerSuit = document.createElement('div');
+  cornerSuit.className = 'corner-suit';
+  cornerSuit.textContent = suit;
+  cardDiv.appendChild(cornerSuit);
+  cardDiv.appendChild(valueDiv);
+  cardDiv.appendChild(suitDiv);
+  return cardDiv;
+}
+
+// Valor de carta para soma da mão: Ás conta como 11 (ajustado depois se necessário)
+function cardValueForHand(card) {
+  if (!card) return 0;
+  if (card === 'A') return 11;
+  if (['K', 'Q', 'J', '10'].includes(card)) return 10;
+  return parseInt(card);
+}
+
+// Valor de carta para identificar a carta do dealer / par: Ás = 1 (rank "lógico" para comparações de range)
+function cardRank(card) {
+  if (!card) return 0;
+  if (card === 'A') return 1;
+  if (['K', 'Q', 'J', '10'].includes(card)) return 10;
+  return parseInt(card);
+}
+
+function calculateHandValue(cards) {
+  const activeCards = cards.filter(c => c);
+  if (activeCards.length === 0) return { value: 0, isSoft: false };
+  let value = 0;
+  let aces = 0;
+  activeCards.forEach(card => {
+    if (card === 'A') {
+      value += 11;
+      aces++;
+    } else if (['K', 'Q', 'J', '10'].includes(card)) {
+      value += 10;
+    } else {
+      value += parseInt(card);
+    }
+  });
+  while (value > 21 && aces > 0) {
+    value -= 10;
+    aces--;
+  }
+  return { value, isSoft: aces > 0 && value <= 21 };
+}
+
+function updateHandInfo() {
+  const { value, isSoft } = calculateHandValue(playerCards);
+  document.getElementById('handValue').textContent = value;
+  document.getElementById('isSoft').textContent = isSoft ? 'Sim' : 'Não';
+  document.getElementById('cardCount').textContent = playerCards.filter(c => c).length;
+  updateDecision();
+}
+
+function getDealerCardValue() {
+  return cardRank(document.getElementById('dealerCard').value);
+}
+
+/*
+  Estratégia básica (6-8 baralhos, dealer para em Soft 17, double after split permitido,
+  sem regra de surrender). dealerVal usa Ás = 1 para simplificar as comparações de range.
+*/
+function getBasicStrategyDecision(playerCards, dealerVal) {
+  const activeCards = playerCards.filter(c => c);
+  const { value: total, isSoft } = calculateHandValue(playerCards);
+
+  // 1) Pares (só decide split na mão inicial de 2 cartas)
+  if (activeCards.length === 2 && activeCards[0] === activeCards[1]) {
+    const pairCard = activeCards[0];
+
+    if (pairCard === 'A') return 'SPLIT';
+    if (pairCard === '8') return 'SPLIT';
+    if (['10', 'J', 'Q', 'K'].includes(pairCard)) return 'STAND';
+    if (pairCard === '9') {
+      return (dealerVal >= 2 && dealerVal <= 9 && dealerVal !== 7) ? 'SPLIT' : 'STAND';
+    }
+    if (pairCard === '7') return (dealerVal >= 2 && dealerVal <= 7) ? 'SPLIT' : 'HIT';
+    if (pairCard === '6') return (dealerVal >= 2 && dealerVal <= 6) ? 'SPLIT' : 'HIT';
+    if (pairCard === '5') {
+      // 5-5 = hard 10: nunca divide, segue regra de hard 10
+      return (dealerVal >= 2 && dealerVal <= 9) ? 'DOUBLE' : 'HIT';
+    }
+    if (pairCard === '4') return (dealerVal === 5 || dealerVal === 6) ? 'SPLIT' : 'HIT';
+    if (pairCard === '3') return (dealerVal >= 2 && dealerVal <= 7) ? 'SPLIT' : 'HIT';
+    if (pairCard === '2') return (dealerVal >= 2 && dealerVal <= 7) ? 'SPLIT' : 'HIT';
+  }
+
+  // 2) Mãos soft (com Ás contando como 11)
+  if (isSoft) {
+    if (total >= 19) return 'STAND';
+    if (total === 18) {
+      if (dealerVal >= 3 && dealerVal <= 6) return 'DOUBLE';
+      if (dealerVal === 2 || dealerVal === 7 || dealerVal === 8) return 'STAND';
+      return 'HIT'; // dealer 9, 10 ou A
+    }
+    if (total === 17) return (dealerVal >= 3 && dealerVal <= 6) ? 'DOUBLE' : 'HIT';
+    if (total >= 15 && total <= 16) return (dealerVal >= 4 && dealerVal <= 6) ? 'DOUBLE' : 'HIT';
+    if (total === 13 || total === 14) return (dealerVal >= 5 && dealerVal <= 6) ? 'DOUBLE' : 'HIT';
+    return 'HIT';
+  }
+
+  // 3) Mãos hard
+  if (total >= 17) return 'STAND';
+  if (total === 16) return (dealerVal >= 2 && dealerVal <= 6) ? 'STAND' : 'HIT';
+  if (total >= 13 && total <= 15) return (dealerVal >= 2 && dealerVal <= 6) ? 'STAND' : 'HIT';
+  if (total === 12) return (dealerVal >= 4 && dealerVal <= 6) ? 'STAND' : 'HIT';
+  if (total === 11) return (dealerVal !== 1) ? 'DOUBLE' : 'HIT'; // pede contra Ás do dealer
+  if (total === 10) return (dealerVal >= 2 && dealerVal <= 9) ? 'DOUBLE' : 'HIT';
+  if (total === 9) return (dealerVal >= 3 && dealerVal <= 6) ? 'DOUBLE' : 'HIT';
+  return 'HIT'; // total <= 8
+}
+
+function updateDecision() {
+  const dealerVal = getDealerCardValue();
+  const activePlayerCards = playerCards.filter(c => c);
+
+  if (activePlayerCards.length < 2 || !dealerVal) {
+    document.getElementById('decision').style.display = 'none';
+    document.getElementById('decisionText').textContent = 'Selecione suas cartas e a carta do dealer';
+    return;
+  }
+
+  const decision = getBasicStrategyDecision(playerCards, dealerVal);
+
+  let message = '';
+  switch (decision) {
+    case 'HIT': message = '📈 Pegue outra carta'; break;
+    case 'STAND': message = '🛑 Fique com a mão atual'; break;
+    case 'DOUBLE': message = '💰 Dobre a aposta e pegue apenas uma carta'; break;
+    case 'SPLIT': message = '✂️ Divida o par'; break;
+    default: message = '📈 Pegue outra carta';
+  }
+
+  const decisionElement = document.getElementById('decision');
+  const textElement = document.getElementById('decisionText');
+  decisionElement.textContent = decision;
+  decisionElement.className = `decision-box decision-${decision}`;
+  decisionElement.style.display = 'inline-block';
+  textElement.textContent = message;
+}
+
+function generateRandomHand() {
+  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  playerCards = [
+    values[Math.floor(Math.random() * values.length)],
+    values[Math.floor(Math.random() * values.length)]
+  ];
+  document.getElementById('dealerCard').value = values[Math.floor(Math.random() * values.length)];
+  updateCardInputs();
+  updateCardDisplay();
+  updateHandInfo();
+}
+
+function clearAll() {
+  playerCards = ['', ''];
+  document.getElementById('dealerCard').value = '';
+  updateCardInputs();
+  updateCardDisplay();
+  updateHandInfo();
+  document.getElementById('decision').style.display = 'none';
+  document.getElementById('decisionText').textContent = 'Selecione suas cartas e a carta do dealer';
+}
+
+updateCardInputs();
+</script>
+</body>
+</html>
